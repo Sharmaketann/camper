@@ -4,6 +4,7 @@ const colors = require("colors")
 const connectDB = require("./config/db")
 const logger = require("./middleware/logger")
 const morgan = require("morgan")
+const errorHandler = require("./middleware/error")
 
 //Route files
 
@@ -27,6 +28,9 @@ if (process.env.NODE_ENV == "development") {
 //Mount routers
 
 app.use("/api/v1/bootcamps", bootcamps)
+
+// Error handling middleware
+app.use(errorHandler)
 
 const PORT = process.env.PORT || 3000
 

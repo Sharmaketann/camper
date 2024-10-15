@@ -1,0 +1,24 @@
+|-- .gitignore
+|-- config/
+  |-- config.env
+  |-- db.js
+|-- controllers/
+  |-- bootcamps.js
+|-- generateStructure.js
+|-- middleware/
+  |-- error.js
+  |-- logger.js
+|-- models/
+  |-- Bootcamp.js
+|-- package-lock.json
+|-- package.json
+|-- routes/
+  |-- bootcamps.js
+|-- server.js
+|-- utils/
+  |-- errorResponse.js
+|-- _data/
+  |-- bootcamps.json
+  |-- courses.json
+  |-- reviews.json
+  |-- users.json
