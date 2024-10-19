@@ -35,27 +35,27 @@ const transporter = nodemailer.createTransport({
 })
 
 // Middleware to send an email on every route hit
-const sendEmailOnRouteHit = async (req, res, next) => {
-  const mailOptions = {
-    from: process.env.EMAIL_USER,
-    to: "sharmaketann@gmail.com", // Replace with recipient email
-    subject: `Route Hit: ${req.method} ${req.originalUrl}`,
-    text: `A request was made to the following route:\nMethod: ${
-      req.method
-    }\nURL: ${req.originalUrl}\nPayload: ${JSON.stringify(req.body, null, 2)}`,
-  }
+// const sendEmailOnRouteHit = async (req, res, next) => {
+//   const mailOptions = {
+//     from: process.env.EMAIL_USER,
+//     to: "sharmaketann@gmail.com", // Replace with recipient email
+//     subject: `Route Hit: ${req.method} ${req.originalUrl}`,
+//     text: `A request was made to the following route:\nMethod: ${
+//       req.method
+//     }\nURL: ${req.originalUrl}\nPayload: ${JSON.stringify(req.body, null, 2)}`,
+//   }
 
-  try {
-    await transporter.sendMail(mailOptions)
-    console.log(`Email sent for route: ${req.originalUrl}`)
-  } catch (error) {
-    console.error(`Error sending email: ${error}`)
-  }
-  next() // Move to the next middleware or route handler
-}
+//   try {
+//     await transporter.sendMail(mailOptions)
+//     console.log(`Email sent for route: ${req.originalUrl}`)
+//   } catch (error) {
+//     console.error(`Error sending email: ${error}`)
+//   }
+//   next() // Move to the next middleware or route handler
+// }
 
 // Use the middleware for all routes
-app.use(sendEmailOnRouteHit)
+// app.use(sendEmailOnRouteHit)
 
 // Mount routers
 app.use("/api/v1/bootcamps", bootcamps)
