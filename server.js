@@ -9,6 +9,7 @@ const nodemailer = require("nodemailer") // Import nodemailer
 
 // Route files
 const bootcamps = require("./routes/bootcamps")
+const courses = require("./routes/courses")
 
 dotenv.config({ path: "./config/config.env" })
 
@@ -59,6 +60,7 @@ const transporter = nodemailer.createTransport({
 
 // Mount routers
 app.use("/api/v1/bootcamps", bootcamps)
+app.use("/api/v1/courses", courses)
 
 // Error handling middleware
 app.use(errorHandler)
