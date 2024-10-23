@@ -1,13 +1,14 @@
 const ErrorResponse = require("../utils/errorResponse")
-const asyncHand1er = require("../middleware/async")
+const asyncHandler = require("../middleware/async")
 const Bootcamp = require("../models/Bootcamp")
+const Course = require("../models/Course")
 const geocoder = require("../utils/geocoder")
 
 // @desc GET ALL BOOTCAMPS
 // @route GET /api/v1/bootcamps
 // @access public
 
-exports.getBootcamps = asyncHand1er(async (req, res, next) => {
+exports.getBootcamps = asyncHandler(async (req, res, next) => {
   let query
 
   // Copy req.query
@@ -26,7 +27,7 @@ exports.getBootcamps = asyncHand1er(async (req, res, next) => {
   queryStr = queryStr.replace(/\b(gt|gte|lt|lte|in)\b/g, (match) => `$${match}`)
 
   // Finding resources
-  query = Bootcamp.find(JSON.parse(queryStr))
+  query = Bootcamp.find(JSON.parse(queryStr)).populate("courses")
 
   // Select fields
   if (req.query.select) {
@@ -82,7 +83,7 @@ exports.getBootcamps = asyncHand1er(async (req, res, next) => {
 // @route GET /api/v1/bootcamps/:id
 // @access public
 
-exports.getBootcamp = asyncHand1er(async (req, res, next) => {
+exports.getBootcamp = asyncHandler(async (req, res, next) => {
   const bootcamp = await Bootcamp.findById(req.params.id)
 
   if (!bootcamp) {
@@ -98,7 +99,7 @@ exports.getBootcamp = asyncHand1er(async (req, res, next) => {
 // @route POST /api/v1/bootcamps
 // @access private
 
-exports.createBootcamp = asyncHand1er(async (req, res, next) => {
+exports.createBootcamp = asyncHandler(async (req, res, next) => {
   const bootcamp = await Bootcamp.create(req.body)
   res.status(201).json({
     success: true,
@@ -110,7 +111,7 @@ exports.createBootcamp = asyncHand1er(async (req, res, next) => {
 // @route PUT /api/v1/bootcamps/:id
 // @access private
 
-exports.updateBootcamp = asyncHand1er(async (req, res, next) => {
+exports.updateBootcamp = asyncHandler(async (req, res, next) => {
   const bootcamp = await Bootcamp.findByIdAndUpdate(req.params.id, req.body, {
     new: true,
     runValidators: true,
@@ -129,14 +130,24 @@ exports.updateBootcamp = asyncHand1er(async (req, res, next) => {
 // @route DELETE /api/v1/bootcamps/:id
 // @access private
 
-exports.deleteBootcamp = asyncHand1er(async (req, res, next) => {
-  const bootcamp = await Bootcamp.findByIdAndDelete(req.params.id)
+exports.deleteBootcamp = asyncHandler(async (req, res, next) => {
+  const bootcamp = await Bootcamp.findById(req.params.id)
+
   if (!bootcamp) {
-    return next(new ErrorResponse(`No bootcamp with id ${req.params.id}`, 404))
+    return next(
+      new ErrorResponse(`No bootcamp found with id ${req.params.id}`, 404)
+    )
   }
+
+  // Manually delete related courses
+  await Course.deleteMany({ bootcamp: req.params.id })
+
+  // Now delete the bootcamp
+  await bootcamp.deleteOne()
+
   res.status(200).json({
     success: true,
-    data: "BOOTCAMP DELETED",
+    data: "Bootcamp and related courses deleted successfully",
   })
 })
 
@@ -144,7 +155,7 @@ exports.deleteBootcamp = asyncHand1er(async (req, res, next) => {
 // @route GET /api/v1/bootcamps/radius/:zipcode/:distance
 // @access private
 
-exports.getBootcampsInRadius = asyncHand1er(async (req, res, next) => {
+exports.getBootcampsInRadius = asyncHandler(async (req, res, next) => {
   const { zipcode, distance } = req.params
 
   const loc = await geocoder.geocode(zipcode)
