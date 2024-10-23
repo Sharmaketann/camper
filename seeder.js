@@ -30,7 +30,7 @@ const reviews = JSON.parse(
 const importData = async () => {
   try {
     await Bootcamp.create(bootcamps)
-    // await Course.create(courses)
+    await Course.create(courses)
     // await User.create(users)
     // await Review.create(reviews)
     console.log("Data imported...".green.inverse)

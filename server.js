@@ -1,3 +1,4 @@
+const path = require("path")
 const express = require("express")
 const dotenv = require("dotenv")
 const colors = require("colors")
@@ -6,6 +7,7 @@ const logger = require("./middleware/logger")
 const morgan = require("morgan")
 const errorHandler = require("./middleware/error")
 const nodemailer = require("nodemailer") // Import nodemailer
+const fileupload = require("express-fileupload")
 
 // Route files
 const bootcamps = require("./routes/bootcamps")
@@ -25,6 +27,12 @@ app.use(express.json())
 if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"))
 }
+
+// File Uploading
+app.use(fileupload())
+
+// Set static folder
+app.use(express.static(path.join(__dirname, "public")))
 
 // Nodemailer setup for sending emails
 const transporter = nodemailer.createTransport({
