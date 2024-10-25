@@ -1,5 +1,5 @@
 const mongoose = require("mongoose")
-
+const bcrypt = require("bcryptjs")
 const UserSchema = new mongoose.Schema(
   {
     name: {
@@ -28,22 +28,32 @@ const UserSchema = new mongoose.Schema(
       enum: ["user", "publisher"],
       default: "user",
     },
-    photo: {
-      type: String,
-      default: "default.jpg",
-    },
-    phone: {
-      type: String,
-      maxlength: [20, "Phone number can not be longer than 20 characters"],
-    },
-    address: {
-      type: String,
-      required: [true, "Please add an address"],
-    },
+    // photo: {
+    //   type: String,
+    //   default: "default.jpg",
+    // },
+    // phone: {
+    //   type: String,
+    //   maxlength: [20, "Phone number can not be longer than 20 characters"],
+    // },
+    // address: {
+    //   type: String,
+    //   required: [true, "Please add an address"],
+    // },
   },
   {
     timestamps: true,
   }
 )
+
+// Encrypt password using bcrypt
+UserSchema.pre("save", async function (next) {
+  if (!this.isModified("password")) {
+    next()
+  }
+
+  const salt = await bcrypt.genSalt(10)
+  this.password = await bcrypt.hash(this.password, salt)
+})
 
 module.exports = mongoose.model("User", UserSchema)
